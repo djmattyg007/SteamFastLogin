@@ -34,7 +34,7 @@ class MainWindowWidget(QMainWindow):
         self._resetGeometry()
 
     def _resetGeometry(self):
-        self.resize(320, 200)
+        self.resize(400, 200)
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
@@ -122,7 +122,7 @@ class NewUserForm(QWidget):
         self._resetGeometry()
 
     def _resetGeometry(self):
-        self.resize(300, 150)
+        self.resize(350, 150)
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
