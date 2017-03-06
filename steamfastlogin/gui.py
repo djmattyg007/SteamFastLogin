@@ -142,9 +142,12 @@ class NewUserForm(QWidget):
             self.submitForm()
 
     def submitForm(self):
-        self._submitted = True
         username = self._usernameField.text()
         password = self._passwordField.text()
+        if not username or not password:
+            QMessageBox.critical(self, "New User", "Must enter username and password", QMessageBox.Ok, QMessageBox.Ok)
+            return
+        self._submitted = True
         self.close()
         self.formSubmitted.emit(username, password)
 
