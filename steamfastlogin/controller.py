@@ -42,6 +42,11 @@ class Controller(object):
         user = self._userList.getUser(name)
         self._processRunner.runAsync("steam", ("-login", user.name, user.getPassword()))
 
+    def closeSteam(self):
+        reply = self._ui.askQuestion("Close Steam", "Are you sure?")
+        if reply:
+            self._processRunner.runAsync("steam", ("-shutdown",))
+
 
 class AppController(object):
     def __init__(self, ui: UserInteraction, userList: UserListWidget, actions: ActionContainerWidget, controller: Controller):
@@ -56,6 +61,7 @@ class AppController(object):
         self._actions.addButton("&Login", self.login)
         self._actions.addButton("&Add", self.add)
         self._actions.addButton("&Remove", self.remove)
+        self._actions.addButton("&Close Steam", self.close)
 
     def login(self, event):
         selectedUser = self._userList.getSelectedUser()
@@ -88,3 +94,6 @@ class AppController(object):
                 self._userList.removeUserByItem(self._userList.currentItem())
         else:
             self._ui.showWarning("Remove User", "No user selected")
+
+    def close(self, event):
+        self._controller.closeSteam()
