@@ -18,6 +18,7 @@ from steamfastlogin.controller import Controller, AppController
 from steamfastlogin.dirs import usersConfFile
 from steamfastlogin.gui import MainWindowWidget, UserListWidget, ActionContainerWidget, UserInteraction
 from steamfastlogin.users import UserList
+from steamfastlogin.util import ProcessRunner
 
 
 def main():
@@ -26,7 +27,7 @@ def main():
 
     userList = UserList(usersConfFile())
     ui = UserInteraction(mainWindow)
-    controller = Controller(userList, ui)
+    controller = Controller(userList, ui, ProcessRunner())
 
     userListWidget = UserListWidget()
     # Populate the list with any existing users

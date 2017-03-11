@@ -7,17 +7,16 @@
 # project is distributed without any warranty. Please see LICENSE.txt for the
 # full text of the license.
 
-import atexit
-import os
-from PyQt5.QtWidgets import qApp
-from steamfastlogin.gui import MainWindowWidget, UserListWidget, NewUserForm, ActionContainerWidget, UserInteraction
+from steamfastlogin.gui import UserListWidget, NewUserForm, ActionContainerWidget, UserInteraction
 from steamfastlogin.users import UserList
+from steamfastlogin.util import ProcessRunner
 
 
 class Controller(object):
-    def __init__(self, userList: UserList, ui: UserInteraction):
+    def __init__(self, userList: UserList, ui: UserInteraction, processRunner: ProcessRunner):
         self._userList = userList
         self._ui = ui
+        self._processRunner = processRunner
 
     def addUser(self, name: str, password: str):
         try:
@@ -41,7 +40,7 @@ class Controller(object):
 
     def loginUser(self, name: str):
         user = self._userList.getUser(name)
-        atexit.register(os.execlp, "steam", "steam", "-login", user.name, user.getPassword())
+        self._processRunner.runAsync("steam", ("-login", user.name, user.getPassword()))
 
 
 class AppController(object):
@@ -62,7 +61,6 @@ class AppController(object):
         selectedUser = self._userList.getSelectedUser()
         if selectedUser:
             self._controller.loginUser(selectedUser)
-            qApp.quit()
         else:
             self._ui.showWarning("Login", "No user selected")
 
