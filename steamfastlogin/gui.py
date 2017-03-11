@@ -168,21 +168,29 @@ class SettingsForm(AbstractForm):
     formSubmitted = pyqtSignal(dict)
 
     def _initUI(self):
-        self._grid = QFormLayout()
-        self._grid.setSpacing(8)
         self._font = QFont()
         self._font.setPointSize(12)
+        self._grid = QVBoxLayout()
+
+        self._form = QFormLayout()
+        self._form.setSpacing(8)
         self._fields = {}
 
         self._addFilePickerField("steam_path", tr("SettingsForm", "Path to Steam"), "Steam (*steam*);;All Files(*)")
 
+        self._grid.addLayout(self._form)
+
+        buttonsContainer = QHBoxLayout()
+        buttonsContainer.addStretch(1)
         self._saveButton = QPushButton(tr("SettingsForm", "Save"))
         self._saveButton.setFont(self._font)
         self._saveButton.clicked.connect(lambda e: self.submitForm())
+        buttonsContainer.addWidget(self._saveButton)
         self._cancelButton = QPushButton(tr("SettingsForm", "Cancel"))
         self._cancelButton.setFont(self._font)
         self._cancelButton.clicked.connect(self.close)
-        self._grid.addRow(self._saveButton, self._cancelButton)
+        buttonsContainer.addWidget(self._cancelButton)
+        self._grid.addLayout(buttonsContainer)
 
         self.setLayout(self._grid)
         self.setWindowTitle(tr("SettingsForm", "Settings"))
@@ -203,7 +211,7 @@ class SettingsForm(AbstractForm):
             if filename:
                 fieldWidget.setText(filename)
         fileDialogOpener.clicked.connect(chooseFile)
-        self._grid.addRow(labelWidget, filePicker)
+        self._form.addRow(labelWidget, filePicker)
         self._fields[code] = fieldWidget
 
     def _resetGeometry(self):
