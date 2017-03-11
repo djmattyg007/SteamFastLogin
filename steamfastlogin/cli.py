@@ -16,19 +16,22 @@ from PyQt5.QtWidgets import QApplication
 # keyring interactions "Just Work(tm)"
 from PyQt5.QtDBus import QDBusConnection, QDBusInterface
 from steamfastlogin.controller import Controller, AppController
-from steamfastlogin.dirs import usersConfFile
+from steamfastlogin.dirs import usersConfFile, settingsConfFile
 from steamfastlogin.gui import MainWindowWidget, UserListWidget, ActionContainerWidget, UserInteraction
+from steamfastlogin.settings import Settings
 from steamfastlogin.users import UserList
 from steamfastlogin.util import tr, ProcessRunner
 
 
 def guiInit():
+    userList = UserList(usersConfFile())
+    settings = Settings(settingsConfFile())
+
     mainWindow = MainWindowWidget()
     mainWindow.setWindowTitle(tr("guiInit", "Steam Fast Login"))
 
-    userList = UserList(usersConfFile())
     ui = UserInteraction(mainWindow)
-    controller = Controller(userList, ui, ProcessRunner())
+    controller = Controller(settings, userList, ui, ProcessRunner())
 
     userListWidget = UserListWidget()
     # Populate the list with any existing users
@@ -39,7 +42,7 @@ def guiInit():
 
     actionContainer = ActionContainerWidget()
 
-    appController = AppController(ui, userListWidget, actionContainer, controller)
+    appController = AppController(settings, ui, userListWidget, actionContainer, controller)
 
     mainWindow.addWidget_(actionContainer)
 

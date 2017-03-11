@@ -7,13 +7,15 @@
 # project is distributed without any warranty. Please see LICENSE.txt for the
 # full text of the license.
 
-from steamfastlogin.gui import UserListWidget, NewUserForm, ActionContainerWidget, UserInteraction
+from steamfastlogin.gui import UserListWidget, NewUserForm, SettingsForm, ActionContainerWidget, UserInteraction
+from steamfastlogin.settings import Settings
 from steamfastlogin.users import UserList
 from steamfastlogin.util import tr, ProcessRunner
 
 
 class Controller(object):
-    def __init__(self, userList: UserList, ui: UserInteraction, processRunner: ProcessRunner):
+    def __init__(self, settings: Settings, userList: UserList, ui: UserInteraction, processRunner: ProcessRunner):
+        self._settings = settings
         self._userList = userList
         self._ui = ui
         self._processRunner = processRunner
@@ -40,16 +42,23 @@ class Controller(object):
 
     def loginUser(self, name: str):
         user = self._userList.getUser(name)
-        self._processRunner.runAsync("steam", ("-login", user.name, user.getPassword()))
+        self._processRunner.runAsync(self._getSteamCommand(), ("-login", user.name, user.getPassword()))
 
     def closeSteam(self):
         reply = self._ui.askQuestion(tr("Controller", "Close Steam"), tr("Controller", "Are you sure?"))
         if reply:
-            self._processRunner.runAsync("steam", ("-shutdown",))
+            self._processRunner.runAsync(self._getSteamCommand(), ("-shutdown",))
+
+    def _getSteamCommand(self):
+        command = self._settings.getSteamPath()
+        if not command:
+            command = "steam"
+        return command
 
 
 class AppController(object):
-    def __init__(self, ui: UserInteraction, userList: UserListWidget, actions: ActionContainerWidget, controller: Controller):
+    def __init__(self, settings: Settings, ui: UserInteraction, userList: UserListWidget, actions: ActionContainerWidget, controller: Controller):
+        self._settings = settings
         self._ui = ui
         self._userList = userList
         self._actions = actions
@@ -98,3 +107,18 @@ class AppController(object):
 
     def close(self, event):
         self._controller.closeSteam()
+
+    def _settingsSaveCallback(self, formData: dict):
+        self._settings.setRawSettings(formData)
+
+    def settings(self, event):
+        self._actions.disableActions()
+        self._userList.disableList()
+
+        settingsForm = SettingsForm()
+        settingsForm.setFormData(self._settings.getRawSettings())
+        settingsForm.formSubmitted.connect(self._settingsSaveCallback)
+        settingsForm.formClosed.connect(lambda: self._actions.enableActions())
+        settingsForm.formClosed.connect(lambda: self._userList.enableList())
+
+        settingsForm.show()

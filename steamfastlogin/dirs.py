@@ -23,3 +23,8 @@ def confDir() -> Path:
 def usersConfFile() -> Path:
     cdir = confDir()
     return cdir / "users.json"
+
+
+def settingsConfFile() -> Path:
+    cdir = confDir()
+    return cdir / "settings.json"

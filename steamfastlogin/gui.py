@@ -7,6 +7,7 @@
 # project is distributed without any warranty. Please see LICENSE.txt for the
 # full text of the license.
 
+import os.path
 from typing import Callable
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
@@ -14,7 +15,7 @@ from PyQt5.QtWidgets import QDesktopWidget, QMainWindow, QWidget
 from PyQt5.QtWidgets import QLayout, QFormLayout, QHBoxLayout, QVBoxLayout
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from steamfastlogin.util import tr
 
 
@@ -83,8 +84,7 @@ class UserListWidget(QListWidget):
         self.setEnabled(False)
 
 
-class NewUserForm(QWidget):
-    formSubmitted = pyqtSignal(str, str)
+class AbstractForm(QWidget):
     formCancelled = pyqtSignal()
     formClosed = pyqtSignal()
 
@@ -92,6 +92,25 @@ class NewUserForm(QWidget):
         super().__init__()
         self._initUI()
         self._submitted = False
+
+    def _initUI(self):
+        raise NotImplementedError("Must implement _initUI()")
+
+    def _resetGeometry(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def closeEvent(self, event):
+        if self._submitted == False:
+            self.formCancelled.emit()
+        event.accept()
+        self.formClosed.emit()
+
+
+class NewUserForm(AbstractForm):
+    formSubmitted = pyqtSignal(str, str)
 
     def _initUI(self):
         grid = QFormLayout()
@@ -125,16 +144,7 @@ class NewUserForm(QWidget):
 
     def _resetGeometry(self):
         self.resize(350, 150)
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
-    def closeEvent(self, event):
-        if self._submitted == False:
-            self.formCancelled.emit()
-        event.accept()
-        self.formClosed.emit()
+        super()._resetGeometry()
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -152,6 +162,70 @@ class NewUserForm(QWidget):
         self._submitted = True
         self.close()
         self.formSubmitted.emit(username, password)
+
+
+class SettingsForm(AbstractForm):
+    formSubmitted = pyqtSignal(dict)
+
+    def _initUI(self):
+        self._grid = QFormLayout()
+        self._grid.setSpacing(8)
+        self._font = QFont()
+        self._font.setPointSize(12)
+        self._fields = {}
+
+        self._addFilePickerField("steam_path", tr("SettingsForm", "Path to Steam"), "Steam (*steam*);;All Files(*)")
+
+        self._saveButton = QPushButton(tr("SettingsForm", "Save"))
+        self._saveButton.setFont(self._font)
+        self._saveButton.clicked.connect(lambda e: self.submitForm())
+        self._cancelButton = QPushButton(tr("SettingsForm", "Cancel"))
+        self._cancelButton.setFont(self._font)
+        self._cancelButton.clicked.connect(self.close)
+        self._grid.addRow(self._saveButton, self._cancelButton)
+
+        self.setLayout(self._grid)
+        self.setWindowTitle(tr("SettingsForm", "Settings"))
+        self._resetGeometry()
+
+    def _addFilePickerField(self, code: str, label: str, fileFilter: str):
+        labelWidget = QLabel(label)
+        labelWidget.setFont(self._font)
+        filePicker = QHBoxLayout()
+        fieldWidget = QLineEdit()
+        fieldWidget.setFont(self._font)
+        filePicker.addWidget(fieldWidget)
+        fileDialogOpener = QPushButton(tr("SettingsForm", "Pick"))
+        fileDialogOpener.setFont(self._font)
+        filePicker.addWidget(fileDialogOpener)
+        def chooseFile(event):
+            filename, _ = QFileDialog.getOpenFileName(self, label, os.path.expanduser("~"), fileFilter)
+            if filename:
+                fieldWidget.setText(filename)
+        fileDialogOpener.clicked.connect(chooseFile)
+        self._grid.addRow(labelWidget, filePicker)
+        self._fields[code] = fieldWidget
+
+    def _resetGeometry(self):
+        self.resize(450, 150)
+        super()._resetGeometry()
+
+    def gatherFormData(self) -> dict:
+        data = {}
+        for code, field in self._fields.items():
+            data[code] = field.text()
+        return data
+
+    def setFormData(self, formData: dict):
+        for code, field in self._fields.items():
+            if code in formData:
+                field.setText(formData[code])
+
+    def submitForm(self):
+        formData = self.gatherFormData()
+        self._submitted = True
+        self.close()
+        self.formSubmitted.emit(formData)
 
 
 class ActionContainerWidget(QVBoxLayout):
