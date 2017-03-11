@@ -10,10 +10,11 @@
 from typing import Callable
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QDesktopWidget, QMainWindow, QWidget, QLayout, QFormLayout, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QDesktopWidget, QMainWindow, QWidget
+from PyQt5.QtWidgets import QLayout, QFormLayout, QHBoxLayout, QVBoxLayout
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem
-from PyQt5.QtWidgets import QPushButton, QMessageBox
-from PyQt5.QtWidgets import QLabel, QLineEdit
+from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit
+from PyQt5.QtWidgets import QMessageBox
 
 
 _font = QFont()
