@@ -10,7 +10,7 @@
 import os.path
 from typing import Callable
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import QDesktopWidget, QMainWindow, QWidget
 from PyQt5.QtWidgets import QLayout, QFormLayout, QHBoxLayout, QVBoxLayout
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem
@@ -203,8 +203,9 @@ class SettingsForm(AbstractForm):
         fieldWidget = QLineEdit()
         fieldWidget.setFont(self._font)
         filePicker.addWidget(fieldWidget)
-        fileDialogOpener = QPushButton(tr("SettingsForm", "Pick"))
+        fileDialogOpener = QPushButton(QIcon.fromTheme("document-open"), "")
         fileDialogOpener.setFont(self._font)
+        fileDialogOpener.setToolTip(tr("SettingsForm", "Pick"))
         filePicker.addWidget(fileDialogOpener)
         def chooseFile(event):
             filename, _ = QFileDialog.getOpenFileName(self, label, os.path.expanduser("~"), fileFilter)
