@@ -11,6 +11,9 @@
 
 import sys
 from PyQt5.QtWidgets import QApplication
+# Importing these DBus classes before instantiating QApplication seems to make
+# keyring interactions "Just Work(tm)"
+from PyQt5.QtDBus import QDBusConnection, QDBusInterface
 from steamfastlogin.controller import Controller, AppController
 from steamfastlogin.dirs import usersConfFile
 from steamfastlogin.gui import MainWindowWidget, UserListWidget, ActionContainerWidget, UserInteraction
