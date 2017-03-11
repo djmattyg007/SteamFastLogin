@@ -67,7 +67,7 @@ class UserListWidget(QListWidget):
 
     def getSelectedUser(self):
         currentItem = self.currentItem()
-        if currentItem:
+        if currentItem.isSelected():
             return currentItem.text()
         else:
             return None
