@@ -9,7 +9,7 @@
 
 from steamfastlogin.gui import UserListWidget, NewUserForm, ActionContainerWidget, UserInteraction
 from steamfastlogin.users import UserList
-from steamfastlogin.util import ProcessRunner
+from steamfastlogin.util import tr, ProcessRunner
 
 
 class Controller(object):
@@ -22,17 +22,17 @@ class Controller(object):
         try:
             self._userList.addUser(name, password)
         except Exception as e:
-            self._ui.showError("Error", str(e))
+            self._ui.showError(tr("Controller", "Error"), tr("Controller", str(e)))
             return False
         return True
 
     def removeUser(self, name: str):
-        reply = self._ui.askQuestion("Remove User", "Are you sure you want to remove user '{0}'?".format(name))
+        reply = self._ui.askQuestion(tr("Controller", "Remove User"), tr("Controller", "Are you sure you want to remove user '{0}'?").format(name))
         if reply:
             try:
                 self._userList.removeUser(name)
             except Exception as e:
-                self._ui.showError("Error", str(e))
+                self._ui.showError(tr("Controller", "Error"), str(e))
                 return False
             return True
         else:
@@ -43,7 +43,7 @@ class Controller(object):
         self._processRunner.runAsync("steam", ("-login", user.name, user.getPassword()))
 
     def closeSteam(self):
-        reply = self._ui.askQuestion("Close Steam", "Are you sure?")
+        reply = self._ui.askQuestion(tr("Controller", "Close Steam"), tr("Controller", "Are you sure?"))
         if reply:
             self._processRunner.runAsync("steam", ("-shutdown",))
 
@@ -58,17 +58,18 @@ class AppController(object):
         self._initAppActions()
 
     def _initAppActions(self):
-        self._actions.addButton("&Login", self.login)
-        self._actions.addButton("&Add", self.add)
-        self._actions.addButton("&Remove", self.remove)
-        self._actions.addButton("&Close Steam", self.close)
+        self._actions.addButton(tr("AppController", "&Login"), self.login)
+        self._actions.addButton(tr("AppController", "&Add"), self.add)
+        self._actions.addButton(tr("AppController", "&Remove"), self.remove)
+        self._actions.addButton(tr("AppController", "&Close Steam"), self.close)
+        self._actions.addButton(tr("AppController", "&Settings"), self.settings)
 
     def login(self, event):
         selectedUser = self._userList.getSelectedUser()
         if selectedUser:
             self._controller.loginUser(selectedUser)
         else:
-            self._ui.showWarning("Login", "No user selected")
+            self._ui.showWarning(tr("AppController", "Login"), tr("AppController", "No user selected"))
 
     def _addSubmitCallback(self, username: str, password: str):
         result = self._controller.addUser(username, password)
@@ -93,7 +94,7 @@ class AppController(object):
             if result:
                 self._userList.removeUserByItem(self._userList.currentItem())
         else:
-            self._ui.showWarning("Remove User", "No user selected")
+            self._ui.showWarning(tr("AppController", "Remove User"), tr("AppController", "No user selected"))
 
     def close(self, event):
         self._controller.closeSteam()

@@ -10,6 +10,7 @@
 # full text of the license.
 
 import sys
+from PyQt5.QtCore import QTranslator
 from PyQt5.QtWidgets import QApplication
 # Importing these DBus classes before instantiating QApplication seems to make
 # keyring interactions "Just Work(tm)"
@@ -18,12 +19,12 @@ from steamfastlogin.controller import Controller, AppController
 from steamfastlogin.dirs import usersConfFile
 from steamfastlogin.gui import MainWindowWidget, UserListWidget, ActionContainerWidget, UserInteraction
 from steamfastlogin.users import UserList
-from steamfastlogin.util import ProcessRunner
+from steamfastlogin.util import tr, ProcessRunner
 
 
-def main():
+def guiInit():
     mainWindow = MainWindowWidget()
-    mainWindow.setWindowTitle("Steam Fast Login")
+    mainWindow.setWindowTitle(tr("guiInit", "Steam Fast Login"))
 
     userList = UserList(usersConfFile())
     ui = UserInteraction(mainWindow)
@@ -46,9 +47,18 @@ def main():
     return appController, mainWindow
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setApplicationName("Steam Fast Login")
-    appController, mainWindow = main()
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+
+    app = QApplication(argv)
+    app.installTranslator(QTranslator())
+    app.setApplicationName(tr("main", "Steam Fast Login"))
+    appController, mainWindow = guiInit()
     mainWindow.show()
-    sys.exit(app.exec_())
+
+    return app.exec_()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

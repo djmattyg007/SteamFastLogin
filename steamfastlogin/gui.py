@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import QLayout, QFormLayout, QHBoxLayout, QVBoxLayout
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit
 from PyQt5.QtWidgets import QMessageBox
+from steamfastlogin.util import tr
 
 
 _font = QFont()
@@ -35,7 +36,7 @@ class MainWindowWidget(QMainWindow):
         self._resetGeometry()
 
     def _resetGeometry(self):
-        self.resize(400, 220)
+        self.resize(420, 240)
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
@@ -96,20 +97,20 @@ class NewUserForm(QWidget):
         grid = QFormLayout()
         grid.setSpacing(10)
 
-        usernameLabel = QLabel("Username")
+        usernameLabel = QLabel(tr("NewUserForm", "Username"))
         usernameLabel.setFont(_font)
         self._usernameField = QLineEdit()
         self._usernameField.setFont(_font)
         grid.addRow(usernameLabel, self._usernameField)
 
-        passwordLabel = QLabel("Password")
+        passwordLabel = QLabel(tr("NewUserForm", "Password"))
         passwordLabel.setFont(_font)
         self._passwordField = QLineEdit()
         self._passwordField.setFont(_font)
         self._passwordField.setEchoMode(QLineEdit.Password)
         grid.addRow(passwordLabel, self._passwordField)
 
-        self._submitButton = QPushButton("Submit")
+        self._submitButton = QPushButton(tr("NewUserForm", "Submit"))
         self._submitButton.setFont(_font)
         self._submitButton.clicked.connect(lambda e: self.submitForm())
         self._submitButton.setAutoDefault(True)
@@ -119,7 +120,7 @@ class NewUserForm(QWidget):
         self._passwordField.returnPressed.connect(self._submitButton.click)
 
         self.setLayout(grid)
-        self.setWindowTitle("New User")
+        self.setWindowTitle(tr("NewUserForm", "New User"))
         self._resetGeometry()
 
     def _resetGeometry(self):
@@ -146,7 +147,7 @@ class NewUserForm(QWidget):
         username = self._usernameField.text()
         password = self._passwordField.text()
         if not username or not password:
-            QMessageBox.critical(self, "New User", "Must enter username and password", QMessageBox.Ok, QMessageBox.Ok)
+            QMessageBox.critical(self, tr("NewUserForm", "New User"), tr("NewUserForm", "Must enter username and password"), QMessageBox.Ok, QMessageBox.Ok)
             return
         self._submitted = True
         self.close()

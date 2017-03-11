@@ -7,7 +7,12 @@
 # project is distributed without any warranty. Please see LICENSE.txt for the
 # full text of the license.
 
-from PyQt5.QtCore import QProcess
+from typing import Optional
+from PyQt5.QtCore import QCoreApplication, QProcess
+
+
+def tr(ctx: str, msg: str, disambiguation: Optional[str]=None) -> str:
+    return QCoreApplication.translate(ctx, msg, disambiguation)
 
 
 class ProcessRunner(object):
