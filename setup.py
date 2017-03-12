@@ -23,6 +23,9 @@ setup(
     author="Matthew Gamble",
     author_email="git@matthewgamble.net",
     packages=find_packages(),
+    package_data={
+        "steamfastlogin": ["icons/*.png"]
+    },
     install_requires=["appdirs", "keyring", "PyQt5"],
     entry_points=dict(console_scripts=[
         "steam-fast-login = steamfastlogin.cli:main"

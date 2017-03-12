@@ -9,7 +9,7 @@
 
 import os.path
 from typing import Callable
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import QDesktopWidget, QMainWindow, QWidget
 from PyQt5.QtWidgets import QLayout, QFormLayout, QHBoxLayout, QVBoxLayout
@@ -23,12 +23,26 @@ _font = QFont()
 _font.setPointSize(14)
 
 
+class IconHolder(object):
+    _icon = None
+    _sizes = (16, 32, 48, 64, 128, 256)
+
+    @staticmethod
+    def getIcon():
+        if IconHolder._icon is None:
+            IconHolder._icon = QIcon()
+            for size in IconHolder._sizes:
+                IconHolder._icon.addFile("icons/logo{0}.png".format(size), QSize(size, size))
+        return IconHolder._icon
+
+
 class MainWindowWidget(QMainWindow):
     def __init__(self):
         super().__init__()
         self._initUI()
 
     def _initUI(self):
+        self.setWindowIcon(IconHolder.getIcon())
         centralWidget = QWidget(self)
         self.setCentralWidget(centralWidget)
 
@@ -91,6 +105,7 @@ class AbstractForm(QWidget):
     def __init__(self):
         super().__init__()
         self._initUI()
+        self.setWindowIcon(IconHolder.getIcon())
         self._submitted = False
 
     def _initUI(self):
