@@ -2,6 +2,7 @@
 Type=application
 Name=Steam Fast Login
 Comment=Login manager for Steam, allowing fast switching between accounts
+Icon=steam-fast-login
 Exec=/usr/bin/steam-fast-login
 Terminal=false
 Categories=Game;Utility;
