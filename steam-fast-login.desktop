@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=application
+Name=Steam Fast Login
+Comment=Login manager for Steam, allowing fast switching between accounts
+Exec=/usr/bin/steam-fast-login
+Terminal=false
+Categories=Game;Utility;
+Keywords=steam;
