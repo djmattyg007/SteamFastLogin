@@ -26,7 +26,7 @@ setup(
     package_data={
         "steamfastlogin": ["icons/*.png"]
     },
-    install_requires=["appdirs", "keyring", "PyQt5"],
+    install_requires=["appdirs", "keyring"],
     entry_points=dict(console_scripts=[
         "steam-fast-login = steamfastlogin.cli:main"
     ]),
