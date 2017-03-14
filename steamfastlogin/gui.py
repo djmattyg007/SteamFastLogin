@@ -7,7 +7,7 @@
 # project is distributed without any warranty. Please see LICENSE.txt for the
 # full text of the license.
 
-import os.path
+from os import path
 from typing import Callable
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QFont, QIcon
@@ -23,16 +23,19 @@ _font = QFont()
 _font.setPointSize(14)
 
 
+# For some reason, you can create a QFont object before a QCoreApplication object,
+# but not a QIcon object.
 class IconHolder(object):
     _icon = None
     _sizes = (16, 32, 48, 64, 128, 256)
+    _iconPath = path.join(path.abspath(path.dirname(__file__)), "icons")
 
     @staticmethod
     def getIcon():
         if IconHolder._icon is None:
             IconHolder._icon = QIcon()
             for size in IconHolder._sizes:
-                IconHolder._icon.addFile("icons/logo{0}.png".format(size), QSize(size, size))
+                IconHolder._icon.addFile(path.join(IconHolder._iconPath, "logo{0}.png".format(size)), QSize(size, size))
         return IconHolder._icon
 
 
@@ -223,7 +226,7 @@ class SettingsForm(AbstractForm):
         fileDialogOpener.setToolTip(tr("SettingsForm", "Pick"))
         filePicker.addWidget(fileDialogOpener)
         def chooseFile(event):
-            filename, _ = QFileDialog.getOpenFileName(self, label, os.path.expanduser("~"), fileFilter)
+            filename, _ = QFileDialog.getOpenFileName(self, label, path.expanduser("~"), fileFilter)
             if filename:
                 fieldWidget.setText(filename)
         fileDialogOpener.clicked.connect(chooseFile)
